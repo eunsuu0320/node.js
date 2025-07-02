@@ -1,0 +1,9 @@
+{
+  "posts": [
+    {
+      "id": 2,
+      "title": "json서버에서 추가함",
+      "author": "json"
+    }
+  ]
+}
