@@ -1,9 +1,24 @@
 {
   "posts": [
     {
-      "id": 2,
-      "title": "json서버에서 추가함",
-      "author": "json"
+      "id": 9,
+      "title": "fetch연습",
+      "author": "admin"
+    },
+    {
+      "id": "1",
+      "title": "가위바위보",
+      "author": "admin"
+    },
+    {
+      "id": "2",
+      "title": "fetch",
+      "author": "admin"
+    },
+    {
+      "id": "3",
+      "title": "3번 수정",
+      "author": "admin"
     }
   ]
 }
