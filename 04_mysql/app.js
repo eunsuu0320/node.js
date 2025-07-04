@@ -2,8 +2,6 @@ const express = require("express");
 const bodyPerser = require("body-parser");
 require("dotenv").config({ path: "./sql/.env" });
 
-console.log(process.env.USER);
-
 const mysql = require("./sql/index");
 
 const app = express();
