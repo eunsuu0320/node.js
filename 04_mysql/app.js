@@ -1,33 +1,63 @@
-const mysql = require("mysql2");
-const custSql = require("./sql/customerSql");
+const express = require("express");
+const bodyPerser = require("body-parser");
+require("dotenv").config({ path: "./sql/.env" });
 
-// DB 정보 불러오기
-const pool = mysql.createPool({
-  host: "127.0.0.1",
-  port: 3306,
-  user: "dev01",
-  password: "dev01",
-  database: "dev",
-  connectionLimit: 10,
+console.log(process.env.USER);
+
+const mysql = require("./sql/index");
+
+const app = express();
+app.use(bodyPerser.json());
+
+app.get("/", (req, res) => {
+  res.send("Root 경로");
 });
-let data = ["name01", "test@email.com", "010-1111-1111"];
-data = [
-  {
-    name: "username",
-    email: "user@eamil.com",
-    phone: "010-2222-2222",
-    address: "",
-  },
-  1,
-];
-// console.log(custSql["customerList"]);
-function query(alias, values) {
-  pool.query(custSql[alias], values, (err, result) => {
-    if (err) {
-      console.log("처리 중 에러", err);
-    } else {
-      console.log(result);
-    }
-  });
-}
-query("customerList");
+
+// 조회
+app.get("/customers", async (req, res) => {
+  try {
+    let result = await mysql.query("customerList");
+    res.send(result);
+  } catch (err) {
+    res.send("에러 발생 => " + err);
+  }
+});
+
+// 추가
+app.post("/customer", async (req, res) => {
+  try {
+    console.log(req.body.param);
+    let data = req.body.param;
+    let result = await mysql.query("customerInsert", data);
+    res.send(result);
+  } catch (err) {
+    res.send("에러 발생 => " + err);
+  }
+});
+
+// 수정
+app.put("/customer", async (req, res) => {
+  try {
+    let data = req.body.param;
+    let result = await mysql.query("customerUpdate", data);
+    res.send(result);
+  } catch (err) {
+    res.send("에러 발생 => " + err);
+  }
+});
+
+// 삭제
+//https://localhost:3000/customer/8
+app.delete("/customer/:id/:name", async (req, res) => {
+  try {
+    let { id } = req.params;
+    let result = await mysql.query("customerDelete", id);
+    res.send(result);
+  } catch (err) {
+    res.send("에러 발생 => " + err);
+  }
+});
+
+app.listen(3000, () => {
+  console.log("http://localhost:3000 running ...");
+});
