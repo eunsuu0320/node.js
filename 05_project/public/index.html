@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>아라라라라라</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <form action="">
+      <input type="file" name="base64" />
+      <button type="button">업로드</button>
+    </form>
+
+    <script>
+      let data = ""; // base64 인코딩 데이터.
+      let fn; // 파일명
+      // 파일선택.
+      document
+        .querySelector('input[name="base64"]')
+        .addEventListener("change", (e) => {
+          // console.dir(e.target.files[0]);
+          let file = e.target.files[0];
+          fn = file.name;
+          let fr = new FileReader();
+          fr.onload = function (evt) {
+            console.log(evt.target.result); // axios 전달할 값.
+            data = evt.target.result;
+          };
+          fr.readAsDataURL(file);
+        });
+
+      // 저장
+      document
+        .querySelector('button[type="button"]')
+        .addEventListener("click", async (e) => {
+          let result = await axios({
+            method: "post",
+            url: "/upload/" + fn + "/8",
+            data: { data },
+          });
+          console.log(result);
+        });
+    </script>
+  </body>
+</html>
