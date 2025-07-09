@@ -2,6 +2,7 @@ const express = require("express");
 require("dotenv").config({ path: "./mysql/.env" });
 const fs = require("fs");
 const path = require("path");
+const cors = require("cors");
 
 const { query } = require("./mysql/index.js");
 const bodyParser = require("body-parser");
@@ -16,6 +17,7 @@ if (!fs.existsSync(uploadDir)) {
 
 // body-parser
 app.use(express.json({ limit: "10mb" }));
+app.use(cors());
 
 app.listen(3000, () => {
   console.log("npm install");
@@ -82,4 +84,20 @@ app.post("/api/:alias", async (req, res) => {
 
   const result = await query(req.params.alias, req.body.param, req.body.where);
   res.send(result);
+});
+
+app.get("/todoList", async (req, res) => {
+  const result = await query("todoList");
+  console.log(result);
+  res.json(result);
+});
+
+app.delete("/todo/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await query("todoDelete", id);
+    res.json(result);
+  } catch (err) {
+    res.json(err);
+  }
 });

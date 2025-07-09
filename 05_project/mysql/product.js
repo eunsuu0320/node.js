@@ -1,4 +1,14 @@
 module.exports = {
+  // todo 목록
+  todoList: {
+    query: `select *
+            from   tbl_todo`,
+  },
+
+  //todo 삭제
+  todoDelete: {
+    query: `delete from tbl_todo where id = ?`,
+  },
   productList: {
     query: `select t1.*,
                    t2.path,
