@@ -17,7 +17,7 @@ if (!fs.existsSync(uploadDir)) {
 
 // body-parser
 app.use(express.json({ limit: "10mb" }));
-app.use(cors());
+app.use(cors()); // cors 처리.
 
 app.listen(3000, () => {
   console.log("npm install");
@@ -42,16 +42,16 @@ app.get("/download/:productId/:fileName", (req, res) => {
     `image/${fileName.substring(fileName.lastIndexOf("."))}`
   );
   if (!fs.existsSync(filepath)) {
-    console.log("다운로드 실패");
-    res.send("파일이 없습니다.");
+    console.log("파일이 없습니다.");
+    return res.status(404).json({ error: "Can not fount file" });
   }
   fs.createReadStream(filepath).pipe(res);
   // res.send("다운로드 완료");
 });
 
 // 업로드
-app.post("/upload/:filename/:pid", (req, res) => {
-  const { filename, pid } = req.params;
+app.post("/upload/:filename/:pid/:type", (req, res) => {
+  const { filename, pid, type } = req.params;
   //  const filePath = `${__dirname}/uploads/${filename}`;
   let productDir = path.join(uploadDir, pid);
   if (!fs.existsSync(productDir)) {
@@ -63,8 +63,12 @@ app.post("/upload/:filename/:pid", (req, res) => {
 
   try {
     let base64Data = req.body.data;
-    let data = req.body.data.slice(req.body.data.indexOf(";base64,") + 8); // base64 이후의 글자를 잘라오기위해 + 8을 씀.
-    fs.writeFile(filePath, data, "base64", (err) => {
+    let data = req.body.data.slice(base64Data.indexOf(";base64,") + 8); // base64 이후의 글자를 잘라오기위해 + 8을 씀.
+    fs.writeFile(filePath, data, "base64", async (err) => {
+      //pid, type filename => db insert
+      await query("productImageInsert", [
+        { product_id: pid, type: type, path: filename },
+      ]);
       if (err) {
         res.send("error");
       } else {
@@ -72,12 +76,13 @@ app.post("/upload/:filename/:pid", (req, res) => {
       }
     });
   } catch (err) {
-    res.send("error");
+    console.log("error");
   }
 });
 
-// 데이터 쿼리
+// 데이터 쿼리 vue에서 데이터베이스 끌어 쓸 때 필요함.
 app.post("/api/:alias", async (req, res) => {
+  // 라우팅 정보를 통해서 실행할 쿼리 지정.
   // console.log(req.params.alias);
   // console.log(req.body.param);
   // console.log(req.body.where);
